@@ -16,6 +16,7 @@ const formatMealPlans = (plans) => {
 };
 
 // Fetch meal plans based on user ID, health goals, and dietary mode
+// Fetch meal plans based on user ID, health goals, and dietary mode
 exports.fetchMealPlans = async (req, res) => {
     const { userId, healthGoals, dietaryMode } = req.body;
 
@@ -32,14 +33,14 @@ exports.fetchMealPlans = async (req, res) => {
         const results = await MealPlan.getMealPlans(healthGoals, allergenIds, dietaryMode);
         console.log(`Fetched meal plans for health goals '${healthGoals}':`, results);
 
-        if (results.rows.length === 0) {
+        if (!results || results.length === 0) {
             return res.status(404).json({ message: 'No meal plans found for the given criteria.' });
         }
 
         // Fetch recipes for each meal plan
         const mealPlansWithRecipes = await Promise.all(results.map(async (plan) => {
             try {
-                const recipes = await MealPlan.getMealPlans(plan.plan_id); // Fetching recipes for each meal plan
+                const recipes = await MealPlan.getRecipesForMealPlan(plan.plan_id); // Fetching recipes for each meal plan
                 return {
                     ...plan,
                     recipes // Add fetched recipes to each plan
@@ -59,6 +60,7 @@ exports.fetchMealPlans = async (req, res) => {
         res.status(500).json({ message: 'Server error, please try again later.', error: error.message });
     }
 };
+
 
 
 // // Create a new meal plan
