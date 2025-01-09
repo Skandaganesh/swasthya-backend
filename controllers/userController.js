@@ -60,26 +60,27 @@ exports.getAllUsers = async (req, res) => {
 
 const pool =  require('../config/db');
 
+// Import the db connection
+
 exports.getUserDashboardData = async (req, res) => {
     const { userId } = req.params;
 
     try {
-        const result = await pool.query(
-            `SELECT 
+        const result = await pool`
+            SELECT 
                u.name, 
                u.age, 
                u.health_goals AS healthGoals, 
+               u.dietary_preferences AS dietaryMode,
                mp.start_date AS startDate, 
                mp.end_date AS endDate, 
                mp.total_calories AS totalCalories 
-             FROM Users u
-             LEFT JOIN Meal_Plans mp ON u.user_id = mp.user_id
-             WHERE u.user_id = $1`,
-            [userId]
-          );
-          
+            FROM Users u
+            LEFT JOIN Meal_Plans mp ON u.user_id = mp.user_id
+            WHERE u.user_id = ${userId};
+        `;
 
-        if (result.rows.length > 0) {
+        if (result.length > 0) {
             const user = result[0];
             const formattedResult = {
                 name: user.name,
@@ -99,6 +100,7 @@ exports.getUserDashboardData = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 // backend/controllers/userController.js
 
 exports.updateUserEmail = async (req, res) => {
