@@ -26,7 +26,7 @@ exports.fetchMealPlans = async (req, res) => {
     try {
         console.log(`Fetching meal plans for User ID: ${userId}, Health Goals: ${healthGoals}, Dietary Mode: ${dietaryMode}`);
 
-         const allergenIds = await getUserAllergens(userId) || [];
+        const allergenIds = await MealPlan.getUserAllergens(userId) || [];
         console.log(`Fetched allergens for User ID ${userId}:`, allergenIds);
 
         const results = await MealPlan.getMealPlans(healthGoals, allergenIds, dietaryMode);
