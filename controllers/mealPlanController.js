@@ -32,7 +32,7 @@ exports.fetchMealPlans = async (req, res) => {
         const results = await MealPlan.getMealPlans(healthGoals, allergenIds, dietaryMode);
         console.log(`Fetched meal plans for health goals '${healthGoals}':`, results);
 
-        if (results.length === 0) {
+        if (results.rows.length === 0) {
             return res.status(404).json({ message: 'No meal plans found for the given criteria.' });
         }
 
