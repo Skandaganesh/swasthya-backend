@@ -1,24 +1,28 @@
-const db = require('../config/db');
+// models/MealPlan.js
+const pool = require('../config/db'); // Assuming `pool` is exported correctly from your db.js
 
 // Fetch allergens for a user
 const getUserAllergens = async (userId) => {
-    const query = 'SELECT ingredient_id FROM Allergies WHERE user_id = $1';
     try {
-        const result = await db.query(query, [userId]);
-        if (!result.rows || result.rows.length === 0) {
-            console.log(`No allergens found for user ID: ${userId}`);
-            return []; // Return an empty array if no rows
-        }
-        return result.rows.map(item => item.ingredient_id); // Extract ingredient_id
+        const result = await pool`
+            SELECT ingredient_id 
+            FROM Allergies 
+            WHERE user_id = ${userId}
+        `;
+        
+        // If result is not empty, map the rows to get the ingredient_ids
+        return result.length > 0 ? result.map(item => item.ingredient_id) : [];
     } catch (error) {
-        console.error('Error in getUserAllergens:', error);
-        throw error;
+        console.error('Error fetching allergens:', error);
+        throw error; // Re-throw error for handling in controller
     }
 };
 
 
+
+
 const getMealPlans = async (healthGoal, allergenIds, dietaryPreferences) => {
-    const result = await db`
+    const result = await pool`
         SELECT mp.plan_id, mp.start_date, mp.end_date, mp.goal_type, mp.total_calories, r.recipe_id, r.name AS recipe_name
         FROM Meal_Plans mp
         JOIN Recipes r ON r.recipe_id IN (
@@ -37,7 +41,7 @@ const getMealPlans = async (healthGoal, allergenIds, dietaryPreferences) => {
 };
 
 const getRecipesForMealPlan = async (planId) => {
-    const result = await db`
+    const result = await pool`
         SELECT r.recipe_id, r.name AS recipe_name
         FROM Meal_Plan_Recipes mpr
         JOIN Recipes r ON mpr.recipe_id = r.recipe_id
