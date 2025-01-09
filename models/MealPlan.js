@@ -2,13 +2,20 @@ const db = require('../config/db');
 
 // Fetch allergens for a user
 const getUserAllergens = async (userId) => {
-    const result = await db`
-        SELECT ingredient_id 
-        FROM Allergies 
-        WHERE user_id = ${userId};
-    `;
-    return result.rows.map(item => item.ingredient_id);
+    const query = 'SELECT ingredient_id FROM Allergies WHERE user_id = $1';
+    try {
+        const result = await db.query(query, [userId]);
+        if (!result.rows || result.rows.length === 0) {
+            console.log(`No allergens found for user ID: ${userId}`);
+            return []; // Return an empty array if no rows
+        }
+        return result.rows.map(item => item.ingredient_id); // Extract ingredient_id
+    } catch (error) {
+        console.error('Error in getUserAllergens:', error);
+        throw error;
+    }
 };
+
 
 const getMealPlans = async (healthGoal, allergenIds, dietaryPreferences) => {
     const result = await db`
