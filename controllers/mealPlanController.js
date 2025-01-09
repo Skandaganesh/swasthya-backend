@@ -39,7 +39,7 @@ exports.fetchMealPlans = async (req, res) => {
         // Fetch recipes for each meal plan
         const mealPlansWithRecipes = await Promise.all(results.map(async (plan) => {
             try {
-                const recipes = await MealPlan.getRecipesForMealPlan(plan.plan_id); // Fetching recipes for each meal plan
+                const recipes = await MealPlan.getMealPlans(plan.plan_id); // Fetching recipes for each meal plan
                 return {
                     ...plan,
                     recipes // Add fetched recipes to each plan
