@@ -27,15 +27,16 @@ exports.fetchMealPlans = async (req, res) => {
     try {
         console.log(`Fetching meal plans for User ID: ${userId}, Health Goals: ${healthGoals}, Dietary Mode: ${dietaryMode}`);
 
-        // const allergenIds = await MealPlan.getUserAllergens(userId) || [];
-        // console.log(`Fetched allergens for User ID ${userId}:`, allergenIds);
+        const allergenIds = await MealPlan.getUserAllergens(userId) || [];
+        console.log(`Fetched allergens for User ID ${userId}:`, allergenIds);
 
-        // const results = await MealPlan.getMealPlans(healthGoals, allergenIds, dietaryMode);
-        // console.log(`Fetched meal plans for health goals '${healthGoals}':`, results);
+        const results = await MealPlan.getMealPlans(healthGoals, allergenIds, dietaryMode);
+        console.log(`Fetched meal plans for health goals '${healthGoals}':`, results);
 
-        // if (!results || results.length === 0) {
-        //     return res.status(404).json({ message: 'No meal plans found for the given criteria.' });
-        // }
+        if (!results || results.length === 0) {
+            alert("No meal plans found for the given criteria");
+            return res.status(404).json({ message: 'No meal plans found for the given criteria.' });
+        }
 
         // Fetch recipes for each meal plan
         const mealPlansWithRecipes = await Promise.all(results.map(async (plan) => {
